@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Para ti 🌻</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html {
+      width: 100%; height: 100%;
+      background: #050515;
+      color: #ffffff;
+      font-family: sans-serif;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    #galaxyCanvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+    }
+
+    .card {
+      position: relative;
+      z-index: 10;
+      background: rgba(15, 15, 35, 0.85);
+      padding: 30px 20px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 215, 0, 0.6);
+      box-shadow: 0 0 35px rgba(255, 215, 0, 0.4);
+      max-width: 90%;
+      width: 380px;
+      backdrop-filter: blur(8px);
+    }
+
+    h1 {
+      color: #ffd700;
+      font-size: 1.4rem;
+      margin-bottom: 20px;
+      text-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+    }
+
+    .quote-box {
+      font-size: 1.15rem;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-style: italic;
+      color: #fff8dc;
+      margin: 20px 0;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #ffd700, #ffae00);
+      border: none;
+      padding: 14px 24px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #0b0b1a;
+      border-radius: 30px;
+      cursor: pointer;
+    }
+
+    .music-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(255, 215, 0, 0.25);
+      border: 1px solid #ffd700;
+      color: #ffd700;
+      padding: 10px 15px;
+      border-radius: 50px;
+      z-index: 100;
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <canvas id="galaxyCanvas"></canvas>
+
+  <audio id="bg-music" loop preload="auto">
+    <source src="https://ia801503.us.archive.org/15/items/flores-amarillas-floricienta/Flores%20Amarillas.mp3" type="audio/mpeg">
+  </audio>
+
+  <button class="music-btn hidden" id="music-control" onclick="toggleMusic()">🎵 Música: ON</button>
+
+  <div class="card" id="start-screen">
+    <button class="btn" onclick="iniciarExperiencia()">toca para iniciar mi linda 🌻</button>
+  </div>
+
+  <div class="card hidden" id="main-screen">
+    <h1>🌻 feliz día de la flores amarillas mi linda hermocha 🌻</h1>
+    <div class="quote-box" id="quote">"Toca el botón de abajo para ver tus frases..."</div>
+    <button class="btn" onclick="nextQuote()">Ver otra frase ✨</button>
+  </div>
+
+  <script>
+    const frases = [
+      "«Eres mi flor amarilla favorita en todo el universo.»",
+      "«Gracias por llenar mi vida de tanta luz y alegría te amo. ✨»",
+      "«Donde sea, pero que sea contigo mi linda. 🌻»",
+      "«Te mereces todas las flores del mundo hoy y siempre amor.»"
+    ];
+
+    let index = 0;
+    const music = document.getElementById('bg-music');
+    const musicBtn = document.getElementById('music-control');
+
+    function iniciarExperiencia() {
+      document.getElementById('start-screen').classList.add('hidden');
+      document.getElementById('main-screen').classList.remove('hidden');
+      musicBtn.classList.remove('hidden');
+      music.play();
+    }
+
+    function toggleMusic() {
+      if (music.paused) {
+        music.play();
+        musicBtn.innerText = "🎵 Música: ON";
+      } else {
+        music.pause();
+        musicBtn.innerText = "🔇 Música: OFF";
+      }
+    }
+
+    function nextQuote() {
+      const quoteElement = document.getElementById("quote");
+      quoteElement.innerText = frases[index];
+      index = (index + 1) % frases.length;
+    }
+
+    const canvas = document.getElementById("galaxyCanvas");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    const elements = Array.from({ length: 90 }, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      radius: Math.random() * 2 + 1,
+      speed: Math.random() * 0.8 + 0.2,
+      color: Math.random() > 0.4 ? "#ffd700" : "#ffffff",
+      isFlower: Math.random() > 0.85
+    }));
+
+    function draw() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      elements.forEach(el => {
+        if (el.isFlower) {
+          ctx.font = "16px sans-serif";
+          ctx.fillText("🌻", el.x, el.y);
+        } else {
+          ctx.beginPath();
+          ctx.arc(el.x, el.y, el.radius, 0, Math.PI * 2);
+          ctx.fillStyle = el.color;
+          ctx.fill();
+        }
+        el.y += el.speed;
+        if (el.y > canvas.height) {
+          el.y = -10;
+          el.x = Math.random() * canvas.width;
+        }
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
